@@ -1,0 +1,32 @@
+@charset "UTF-8";
+
+.nboard {
+	text-align: center;
+	margin: 0 auto;
+	border-collapse: collapse;
+}
+
+.nboard td {
+	text-align: center;
+	width: 200px;
+	border: solid 1px;
+}
+
+.nboard th {
+	text-align: center;
+	border: 1px solid;
+	width: 200px;
+}
+
+.nboard caption {
+	font-size: 30px;
+}
+
+.nboard a{
+	margin-left: 10px;
+}
+.nboard b{
+	color:black;
+}
+
+.nb_header {height: 75px;}

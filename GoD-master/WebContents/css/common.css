@@ -1,0 +1,182 @@
+@charset "UTF-8";
+body {margin:0; padding:0;}
+/* --------- header.jsp --------- */
+.headerUl ul {display : flex; width:100%;  margin:0; list-style:none; float:left; text-align:center; }
+.headerUl li{
+	width:100%;
+	display : inline-block;
+	text-align:center;
+}
+.headerUl li > a{text-decoration:none; color:white;}
+
+.mainTitle  {   text-align: center;   width: 100px;  height: 100%;  font-size: 40px; }
+
+.headerUl{  display : flex;
+	 margin:0 auto; width:600px ; height:100%; line-height: 50px;  }
+	 
+.headerButtons{  width: 274px;  height:100%;  text-align: center; line-height: 50px; 
+display: flex; justify-content: center; align-items: center; margin-right: 140px;}
+
+.headerTop{  width:100%; height:52px; margin:0 auto; padding: 0px; background-color: rgba(72,81,84,0.8);}
+
+.headerBody{margin:0; position:fixed; width:100%;  z-index: 2;} /* 여백없이 만들려고 body 넣음 */
+
+
+a { text-decoration: none; color: inherit; display: flex; justify-content: center; align-items: center; }
+.login { border-radius :5px; width: 274px;   height: 50px;  margin-right: 140px; 
+  display: flex; justify-content: center; align-items: center; }
+.login img{ vertical-align:middle;  } 
+b {color: white; }
+
+
+
+#btn_search {margin: 0 40px 0 20px;}
+.login_btn {margin-right: 10px;}
+/*
+
+.mainTitle a{text-decoration:none;color:white;}
+.headerButtons{width:380px;height:30px;position:absolute; top:3%; right:5%;}
+
+ */
+/* --------- create.jsp ---------  */
+
+.jointitle {text-align: center;}
+
+.jointable {
+	margin-left: auto; margin-right: auto; 
+	border: 1px solid black;  
+	padding : 50px; 
+	}
+
+.CreateForm { text-align: center;}
+.jointable td { padding: 6px; }
+ #btn_create { width: 180px; height: 50px; margin-top: 20px; }
+ 
+/* --------- index.jsp --------- */
+
+#background { margin: -3px; overflow-x: hidden; }
+
+#header { 
+		background-image: url("../img/Alps2.jpg"); 
+		width: 1915px; height: 1000px ;
+		background-size: cover; 
+		}
+
+#search { 
+ 	position : absolute; left: 33%; top: 80%; 
+ 	z-index: 1;
+	display: flex;
+  	justify-content: center;
+  	align-items: center;
+	background-color: white; opacity:0.8; width : 580px ;
+	height : 50px ;
+	border-radius: 10px;
+	padding: 10px;
+	padding-right: 50px;
+	}
+
+.findtext {font-size : 20px;}
+#b_search {margin: -45px;}
+
+#div_search {
+	display : none;
+    position: fixed;
+    width: 250px;
+    padding: 20px;
+    top: 60px;
+    right: 148px;
+    text-align: left;
+    background-color: rgba(0, 0, 0, 0.7);
+    border-radius: 8px;
+    
+    }
+
+#input_search { height: 25px; background-color: rgba(255, 255, 255, 0);  color: white; outline: none;
+border:0 solid black; font-size: 18px; padding-bottom: 7;
+ }   
+ #input_search::placeholder {
+  color: white;
+  font-style: italic;
+}
+
+
+/* ---------  login.jsp --------- */
+
+.logintitle {text-align: center;}
+.loginForm { text-align: center;}
+
+.logintable { 
+	margin-left: auto; margin-right: auto; 
+	border: 1px solid black; padding-left: 50px; 
+	padding-top:30px; padding-right: 50px; padding-bottom: 80px;
+	}
+	
+.logintable td { padding: 6px; }
+.bottomText {padding-top: 15px;}
+.home { text-align: center;}
+
+/* main.jsp 화면 구성 */
+#tripreq   { }
+#maintbBox { margin-top:200px;  margin-left:150px; 
+			 display:inline-block; width:700px; height: 575px; }
+#maintbBox h2 { display:inline-block; margin:0 0 10px 5px; width:200px; margin-right:0;}
+#maintbBox a { margin-right:20%; color:blue; text-decoration:underline; float:right;
+			   margin-top:10px; }	
+#tboardBox{  display:inline-block; width:565px; height:115px;}
+#tbimgbox { float:left; 
+			display:inline-block; width:165px; height:110px;}
+#tbimgbox a{ clear:left; width:160px; height:110px; margin:0 auto;  }
+a img{  clear:left; width:100%; height:100%;  }
+#mlistcont {  float:right; border-top:1px solid gray;
+		     border-bottom:1px solid gray; border-collapse: collapse;
+			 display: inline-block; width:400px; height:110px;}
+#mlistcont p { margin:0 auto;}
+#mlistcont p:NTH-OF-TYPE(1) { height:40px; font-weight: bold; font-size: 20px;}
+.mBox { display:block; margin:0 auto;}
+/* 공지사항  칸 */
+#mainnBox {   margin-left:20px;  position:relative; top:-460px; 
+			 display:inline-block; width:400px; height: 300px; }
+#mainnBox h2 { display:inline-block; margin:0 0 10px 5px; width:200px; margin-right:0;}
+#mainnBox a { margin-right:1%; color:blue; text-decoration:underline; float:right;
+			   margin-top:10px; }	
+#nboardBox{  display:inline-block; width:400px; height:25px;}
+#nlistcont {  float:right; border-top:1px solid gray;
+		     border-bottom:1px solid gray; border-collapse: collapse;
+			 display: inline-block; width:400px; height:25px;}
+#nlistcont p { display:inline-block; clear:both; margin:0 auto; line-height:10px;}
+#nlistcont a { float:left; margin:0 auto;}
+#nlistcont p:NTH-OF-TYPE(1) {  font-weight: bold; font-size: 20px;}
+#nlistcont p:NTH-OF-TYPE(2) {  margin-left:5px;}
+/* 자유게시판 칸*/
+#mainfBox {  margin-top:20px; position:relative; top:-100px; right:410px;
+			 display:inline-block; width:400px; height: 300px; }
+#mainfBox h2 { display:inline-block; margin:0 0 10px 5px; width:200px; margin-right:0;}
+#mainfBox a { margin-right:1%; color:blue; text-decoration:underline; float:right;
+			   margin-top:10px; }	
+#fboardBox{  display:inline-block; width:400px; height:50px;}
+#flistcont {  float:right; border-top:1px solid gray;
+		     border-bottom:1px solid gray; border-collapse: collapse;
+			 display: inline-block; width:400px; height:50px;}
+#flistcont p { display:inline-block; clear:both; margin:0 auto; line-height:10px;}
+#flistcont a { float:left; margin:0 auto;}
+#flistcont p:NTH-OF-TYPE(1) {  font-weight: bold; font-size: 20px;}
+#flistcont p:NTH-OF-TYPE(2) {  margin-left:5px;}
+#flistcont p:NTH-OF-TYPE(3) { display:block; float:right; margin-right:10px; margin-top:5px;}
+
+
+/* footer */
+
+.footer { clear:both; width:100%; background-color: gray; }
+.copyright { padding:50px; text-align: center; height:100px; font-size:20px;
+			 background-color: gray; }
+.copyright p{ margin:0 auto 0;}
+.copyright p:nth-of-type(1){ margin-top:0px auto 0; font-weight: bold;
+							 font-size:30px;}
+
+
+
+
+
+
+
+
