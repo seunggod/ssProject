@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:aop="http://www.springframework.org/schema/aop"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.2.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.2.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.2.xsd">
+	
+	
+	<context:component-scan base-package="com.*"></context:component-scan>
+	<mvc:annotation-driven />
+	
+	<!-- css, js, img 사용 설정 -->
+	<mvc:resources location="/WEB-INF/resources/css/"  mapping="/css/**" />
+	<mvc:resources location="/WEB-INF/resources/js/"   mapping="/js/**" />
+	<mvc:resources location="/WEB-INF/resources/img/"  mapping="/img/**" />
+	<mvc:resources location="/WEB-INF/resources/upload/"  mapping="/upload/**" />
+	
+
+    <bean id="viewResolver" 
+     class ="org.springframework.web.servlet.view.InternalResourceViewResolver">
+       <property name="prefix" value="/WEB-INF/views/" />
+       <property name="suffix" value=".jsp" />
+     </bean> 
+     
+     <!-- DB properties -->
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations" value=" classpath*:/properties/jdbc.properties"/>
+        <property name="fileEncoding" value="UTF-8"/>
+    </bean>
+ 
+    <!-- JDBC-MSSQL -->
+    <bean id="dataSource" class="org.springframework.jdbc.datasource.DriverManagerDataSource">
+        <property name="driverClassName" value="${jdbc.driverClassName}"/>
+        <property name="url" value="${jdbc.url}"/>
+        <property name="username" value="${jdbc.username}"/>
+        <property name="password" value="${jdbc.password}"/>
+    </bean>
+   
+   <!-- mybatis 와 스프링 연결을 위한 SqlSessionFactory 객체 사용
+      DB 연결 및 sql 명령 실행을 담당    --> 
+    <bean id="sqlSessionFactory" 
+          class="org.mybatis.spring.SqlSessionFactoryBean">
+        <property name="dataSource"     ref="dataSource" />  
+        <property name="mapperLocations" 
+            value="classpath:myBatis/sqlmaps/*.xml" />  
+    </bean>
+    
+    <!-- SqlSessionTemplate 설정   -->
+    <bean id="sqlSession"
+          class="org.mybatis.spring.SqlSessionTemplate"
+          destroy-method="clearCache">
+          <constructor-arg 
+             name="sqlSessionFactory"
+             ref="sqlSessionFactory"></constructor-arg>
+    </bean>
+	
+	<!-- MultipartResolver 설정 -->
+    <!--  최대 업로드 크기설정 100,000,000 (100 M)   -->
+    <bean id    = "multipartResolver"
+          class ="org.springframework.web.multipart.commons.CommonsMultipartResolver">
+          <property name="maxUploadSize" value="100000000" />   
+          <property name="maxInMemorySize" value="100000000" /> 
+    </bean>
+   
+
+</beans>
+

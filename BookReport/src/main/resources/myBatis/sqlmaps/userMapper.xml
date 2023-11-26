@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="User">
+  
+   
+  
+   <select id="Login"
+     resultType="com.book.user.vo.UserVo">
+     select mem_num ,mem_id , nickname, mem_lvl from member
+     where mem_id COLLATE Korean_Wansung_CS_AS = #{ userid }
+     and password COLLATE Korean_Wansung_CS_AS = #{ userpwd }
+     and delnum != 1;
+   </select>
+   
+   <insert id="Join"
+     parameterType = "hashmap">
+     insert into member(mem_name, mem_id, password, nickname, gender, email, mem_tel, birth, address, mem_lvl)
+     values (#{ memName }, #{ memId }, #{ memPwd }, #{ nickname }, #{ gender }, #{ email }, #{ tel }, #{ birth }, #{ address }, #{ mem_lvl })
+   </insert>
+   
+   <select id="IdSearch"
+     resultType="string">
+     select mem_id
+     from member
+     where mem_name = #{ name } 
+     and mem_tel = #{ tel }
+   </select>
+  
+   <select id="IdDupCheck"
+   resultType="string">
+   select mem_id
+   from member
+   where mem_id = #{id}
+   </select>
+   
+   <select id="NickDupCheck"
+   resultType="string">
+   select nickname
+   from member
+   where nickname = #{nickname}
+   </select>
+   
+   
+   <select id="Report"
+   statementType="CALLABLE"
+   parameterType="hashmap"
+   resultType="int">
+   	 { CALL REPORT(
+   	  #{report_num,   mode=IN,  jdbcType=INTEGER },
+   	  #{reported_num, mode=IN,  jdbcType=INTEGER },
+   	  #{ num ,  	   mode=IN,  jdbcType=INTEGER },
+   	  #{sort,          mode=IN,  jdbcType=VARCHAR, javaType=string },
+   	  #{reason,        mode=IN,  jdbcType=VARCHAR, javaType=string },
+   	  #{cont,          mode=IN,  jdbcType=VARCHAR, javaType=string }, 
+   	  #{ result , mode=OUT, jdbcType=INTEGER }   )}
+   </select>
+  
+   <select id="Profile"
+   parameterType="string"
+   resultType="com.book.user.vo.UserVo">
+    SELECT mem_name, mem_id, nickname, gender, email, mem_tel, birth, address, address_detail, mem_lvl, joindate
+    FROM member
+    WHERE nickname = #{nickname}
+   </select>
+   
+   <update id="PwdChange"
+   parameterType="hashmap">
+    UPDATE member
+    SET password = #{userpwd}
+    WHERE mem_id = #{userid}
+   </update>
+   
+   <update id="Withdrawal"
+   parameterType="int">
+    UPDATE member
+    SET delnum = 1
+    ,mem_name = ''
+    ,gender   = ''
+    ,email    = ''
+    ,mem_tel  = ''
+    ,birth    = ''
+    ,address  = ''
+    ,address_detail = ''
+    WHERE mem_num = #{mem_num}
+   </update>
+ 
+   <update id="Update"
+   parameterType="hashmap">
+     UPDATE member
+     SET mem_name = #{mem_name}
+    ,email    = #{email}
+    ,mem_tel  = #{tel}
+    ,address  = #{address}
+    ,address_detail = #{address_detail}
+    WHERE mem_num = #{mem_num}
+   </update>
+   
+  
+</mapper>

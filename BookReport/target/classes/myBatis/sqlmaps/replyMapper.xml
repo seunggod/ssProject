@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="Reply">
+
+  
+   <select id="ReplyList"
+   parameterType="hashmap"
+   resultType="com.book.reply.vo.ReplyVo">
+     SELECT reply_num, nickname reply_writer, reply_mem, reply_cont, convert(CHAR(19), reply_date, 20) reply_date
+     , (select count(*) from like_reply where reply_num = a.reply_num) likeCnt
+     <if test="mem_num != null">
+      ,(select count(*) from like_reply where reply_num = a.reply_num and like_mem = #{mem_num} ) likeCheck
+     </if>
+     , (select nickname from reply join member on reply.reply_mem = member.mem_num
+        where rnum = a.rnum 
+        and board_num = a.board_num 
+        and lvl = a.lvl-1 
+        and step = (select max(step) 
+                    from reply 
+                    where lvl = a.lvl-1 
+                    and step <![CDATA[<=]]> a.step 
+                    and board_num = a.board_num 
+                    and rnum = a.rnum) ) rereply_nick
+     FROM reply a JOIN member ON reply_mem = mem_num
+     <where>
+       AND board_num = #{board_num}
+       <if test="writer != null">
+         AND nickname = #{writer}
+       </if>
+     </where>
+     ORDER BY rnum desc, step asc
+     OFFSET (#{replypage}-1)*10 ROWS
+     FETCH NEXT 10 ROWS ONLY
+   </select>
+   
+   
+   <select id="NoticeReplyList"
+   parameterType="hashmap"
+   resultType="com.book.reply.vo.ReplyVo">
+     SELECT reply_num, nickname reply_writer, reply_mem, reply_cont, convert(CHAR(19), reply_date, 20) reply_date
+     , (select count(*) from like_reply_notice where reply_num = a.reply_num) likeCnt
+     <if test="mem_num != null">
+      ,(select count(*) from like_reply_notice where reply_num = a.reply_num and like_mem = #{mem_num} ) likeCheck
+     </if>
+     , (select nickname from reply_notice join member on reply_notice.reply_mem = member.mem_num
+        where rnum = a.rnum 
+        and notice_num = a.notice_num 
+        and lvl = a.lvl-1 
+        and step = (select max(step) 
+                    from reply_notice
+                    where lvl = a.lvl-1 
+                    and step <![CDATA[<=]]> a.step 
+                    and notice_num = a.notice_num 
+                    and rnum = a.rnum) ) rereply_nick
+     FROM reply_notice a JOIN member ON reply_mem = mem_num
+     <where>
+       AND notice_num = #{notice_num}
+       <if test="writer != null">
+         AND nickname = #{writer}
+       </if>
+     </where>
+     ORDER BY rnum desc, step asc
+     OFFSET (#{replypage}-1)*10 ROWS
+     FETCH NEXT 10 ROWS ONLY
+   </select>
+  
+   <select id="FreeReplyList"
+   parameterType="hashmap"
+   resultType="com.book.reply.vo.ReplyVo">
+     SELECT reply_num, nickname reply_writer, reply_mem, reply_cont, convert(CHAR(19), reply_date, 20) reply_date
+     , (select count(*) from like_reply_free where reply_num = a.reply_num) likeCnt
+     <if test="mem_num != null">
+      ,(select count(*) from like_reply_free where reply_num = a.reply_num and like_mem = #{mem_num} ) likeCheck
+     </if>
+     , (select nickname from reply_free join member on reply_free.reply_mem = member.mem_num
+        where rnum = a.rnum 
+        and board_num = a.board_num 
+        and lvl = a.lvl-1 
+        and step = (select max(step) 
+                    from reply_free
+                    where lvl = a.lvl-1 
+                    and step <![CDATA[<=]]> a.step 
+                    and board_num = a.board_num 
+                    and rnum = a.rnum) ) rereply_nick
+     FROM reply_free a JOIN member ON reply_mem = mem_num
+     <where>
+       AND board_num = #{free_num}
+       <if test="writer != null">
+         AND nickname = #{writer}
+       </if>
+     </where>
+     ORDER BY rnum desc, step asc
+     OFFSET (#{replypage}-1)*10 ROWS
+     FETCH NEXT 10 ROWS ONLY
+   </select>
+  
+   <insert id="ReplyWrite"
+   statementType="CALLABLE"
+   parameterType = "hashmap">
+ 	{ CALL REPLYWRITE( 
+ 	  #{board_num, mode=IN, jdbcType=INTEGER },
+ 	  #{reply_num, mode=IN, jdbcType=INTEGER },
+ 	  #{mem_num, mode=IN ,jdbcType=INTEGER},
+ 	  #{reply_cont, mode=IN, jdbcType=VARCHAR}
+ 	)}
+   </insert>
+   
+   <insert id="NoticeReplyWrite"
+   statementType="CALLABLE"
+   parameterType = "hashmap">
+ 	{ CALL NOTICE_REPLYWRITE( 
+ 	  #{notice_num, mode=IN, jdbcType=INTEGER },
+ 	  #{reply_num, mode=IN, jdbcType=INTEGER },
+ 	  #{mem_num, mode=IN ,jdbcType=INTEGER},
+ 	  #{reply_cont, mode=IN, jdbcType=VARCHAR}
+ 	)}
+   </insert>
+   
+   <insert id="FreeReplyWrite"
+   statementType="CALLABLE"
+   parameterType = "hashmap">
+ 	{ CALL FREE_REPLYWRITE( 
+ 	  #{free_num, mode=IN, jdbcType=INTEGER },
+ 	  #{reply_num, mode=IN, jdbcType=INTEGER },
+ 	  #{mem_num, mode=IN ,jdbcType=INTEGER},
+ 	  #{reply_cont, mode=IN, jdbcType=VARCHAR}
+ 	)}
+   </insert>
+   
+   <select id="Replycount"
+   parameterType="hashmap"
+   resultType="int">
+    SELECT count(*) FROM ${table}
+    <where>
+    <if test="board_num != null">
+     board_num = #{board_num}
+    </if>
+    <if test="free_num != null">
+     board_num = #{free_num}
+    </if>
+    <if test="notice_num != null">
+     notice_num = #{notice_num}
+    </if>
+    </where>
+   </select>
+   
+   <update id="ReplyUpdate"
+   parameterType="hashmap">
+    UPDATE ${table}
+    SET reply_cont = #{reply_cont}
+    WHERE reply_num = #{reply_num}
+   </update>
+   
+   
+   <delete id="ReplyDelete"
+   parameterType="hashmap"
+   statementType="CALLABLE">
+   { CALL REPLYDELETE(
+     #{ reply_num, mode=IN, jdbcType=INTEGER }
+   )}
+   </delete>
+   
+   <delete id="NoticeReplyDelete"
+   parameterType="hashmap"
+   statementType="CALLABLE">
+   { CALL NOTICE_REPLYDELETE(
+     #{ reply_num, mode=IN, jdbcType=INTEGER }
+   )}
+   </delete>
+   
+   <delete id="FreeReplyDelete"
+   parameterType="hashmap"
+   statementType="CALLABLE">
+   { CALL FREE_REPLYDELETE(
+     #{ reply_num, mode=IN, jdbcType=INTEGER }
+   )}
+   </delete>
+
+   <insert id="ReplyLike"
+   statementType="CALLABLE"
+   parameterType="hashmap">
+   { CALL REPLYLIKE(  
+   #{reply_num, mode=IN, jdbcType=INTEGER },
+   #{mem_num, mode=IN, jdbcType=INTEGER },
+   #{cnt, mode=OUT, jdbcType=INTEGER } )} 
+   </insert>   
+
+   <insert id="NoticeReplyLike"
+   statementType="CALLABLE"
+   parameterType="hashmap">
+   { CALL NOTICE_REPLYLIKE(  
+   #{reply_num, mode=IN, jdbcType=INTEGER },
+   #{mem_num, mode=IN, jdbcType=INTEGER },
+   #{cnt, mode=OUT, jdbcType=INTEGER } )} 
+   </insert>   
+   
+   <insert id="FreeReplyLike"
+   statementType="CALLABLE"
+   parameterType="hashmap">
+   { CALL FREE_REPLYLIKE(  
+   #{reply_num, mode=IN, jdbcType=INTEGER },
+   #{mem_num, mode=IN, jdbcType=INTEGER },
+   #{cnt, mode=OUT, jdbcType=INTEGER } )} 
+   </insert>   
+
+
+
+   
+     
+  
+</mapper>

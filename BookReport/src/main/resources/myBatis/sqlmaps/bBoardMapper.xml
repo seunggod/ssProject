@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="BBoard">
+
+  <resultMap id="spBoardMap"
+      type="com.book.bboard.vo.BBoardVo">
+     <result property="board_num"         column="BOARD_NUM"        javaType="int" />
+     <result property="board_title"       column="BOARD_TITLE"      javaType="string" />
+     <result property="board_writer_num"  column="BOARD_WRITER_NUM" javaType="int" />
+     <result property="board_cont"        column="BOARD_CONT"   	javaType="string" />
+     <result property="regdate"           column="REGDATE"      	javaType="string" />
+     <result property="readcount"         column="READCOUNT"    	javaType="int" />
+     <result property="likecount"         column="LIKECOUNT"    	javaType="int" />
+     <result property="book_grade"        column="BOOK_GRADE"   	javaType="int" />
+     <result property="book_title"        column="BOOK_TITLE"   	javaType="string" />
+     <result property="book_author"       column="BOOK_AUTHOR" 	    javaType="string" />
+     <result property="publisher"         column="PUBLISHER"    	javaType="string" />
+     <result property="book_sort"         column="BOOK_SORT"    	javaType="string" />
+     <result property="book_image"         column="BOOK_IMAGE"  	javaType="string" />
+   </resultMap>
+   
+   <select id="boardList"
+   parameterType="hashmap"
+   resultType="com.book.bboard.vo.BBoardVo">
+     SELECT b.board_num, board_title, nickname board_writer, board_writer_num, readcount, (select count(*) from like_board where board_num = b.board_num) likecount, convert(CHAR(19), regdate, 20) regdate, book_title, book_image, (select count(*) from reply where reply.board_num=b.board_num) replycount
+     FROM board b JOIN book ON b.book_num = book.book_num
+     JOIN member ON member.mem_num = b.board_writer_num
+     LEFT JOIN like_board l ON l.board_num = b.board_num
+     <include refid="boardSearch"></include>
+     ORDER BY ${sort}
+     <if test="check == 'true'">
+       desc
+     </if>
+     OFFSET (#{nowpage}-1)*#{dpp} ROWS
+     FETCH NEXT #{dpp} ROWS ONLY
+   </select>
+  
+   <select id="boardCount"
+   parameterType="hashmap"
+   resultType="int">
+     SELECT COUNT(*)
+     FROM board b JOIN book ON b.book_num = book.book_num
+     JOIN member ON member.mem_num = b.board_writer_num
+     LEFT JOIN like_board l ON l.board_num = b.board_num
+     <include refid="boardSearch"></include>
+   </select>
+ 
+
+   <select id="bookSearch"
+   resultType="hashmap">
+     select book_num, book_title, book_author, book_sort, convert(varchar, book_date,23) book_date, publisher, book_image
+     from book
+     <include refid="search"></include>
+     ORDER BY book_title
+     OFFSET (#{nowpage}-1)*5 ROWS
+     FETCH NEXT 5 ROWS ONLY
+   </select>
+   
+   <select id="bookSearchResultCnt"
+   resultType="int">
+     select count(*) resultCnt
+     from book
+     <include refid="search"></include>
+     
+   </select>
+  
+   <insert id="bookWrite"
+   statementType="CALLABLE"
+   parameterType = "hashmap">
+    { CALL BOOKWRITE(
+    #{bookTitle, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{author, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{publisher, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{bookDate, mode=IN, jdbcType=DATE},
+    #{sort, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{book_image, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{title, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{mem_num, mode=IN, jdbcType=INTEGER},
+    #{bookGrade, mode=IN, jdbcType=INTEGER},
+    #{cont, mode=IN, jdbcType=VARCHAR, javaType=string}   )}
+   </insert>
+
+   <select id="boardView"
+   statementType="CALLABLE"
+   parameterType="hashmap"
+   resultType="com.book.bboard.vo.BBoardVo"
+   >
+   { CALL BOARDVIEW(
+   #{board_num, mode=IN, jdbcType=INTEGER },
+   #{check, mode=IN, jdbcType=INTEGER }
+      )}
+   </select>
+  
+   <insert id="likeBoard"
+   statementType="CALLABLE"
+   parameterType="hashmap"
+   >
+    { CALL BOARDLIKE(
+   #{board_num, mode=IN, jdbcType=INTEGER },
+   #{mem_num, mode=IN, jdbcType=INTEGER },
+   #{cnt, mode=OUT, jdbcType=INTEGER } )} 
+   </insert>
+   
+   <select id="likeStatus"
+   parameterType="hashmap"
+   resultType="int">
+    SELECT count(*) FROM like_board
+    WHERE board_num = #{ board_num }
+    and like_mem_num = #{ mem_num }
+   </select>
+   
+   <update id="updateBoard"
+   parameterType="hashmap">
+     { CALL BOOKUPDATE(
+    #{board_num, mode=IN, jdbcType=INTEGER },
+    #{bookTitle, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{author, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{publisher, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{bookDate, mode=IN, jdbcType=DATE},
+    #{sort, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{book_image, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{title, mode=IN, jdbcType=VARCHAR, javaType=string},
+    #{bookGrade, mode=IN, jdbcType=INTEGER},
+    #{cont, mode=IN, jdbcType=VARCHAR, javaType=string}   )}
+   </update>
+   
+   
+   <delete id="deleteBoard"
+   parameterType="hashmap">
+    DELETE FROM board
+    WHERE board_num in 
+    <choose>
+      <when test="board_num_list!=null">
+      	<foreach collection="board_num_list" item="board_num" open="(" close=")" separator=",">
+	    	#{board_num}
+	    </foreach>
+      </when>
+      <otherwise>
+      	 (${board_num})
+      </otherwise>
+    </choose>
+    <if test="mem_lvl ==null">
+    	AND board_writer_num = #{ mem_num }
+    </if>
+   </delete>
+  
+   <delete id="likeCancel"
+   parameterType="hashmap">
+    DELETE FROM like_board
+    WHERE board_num in (${board_num})
+    and like_mem_num = #{ mem_num }
+   </delete>
+  
+  
+   <sql id="search">
+     where book_title like '%'+#{keyword}+'%'
+     or book_author like '%'+#{keyword}+'%'
+     or publisher like '%'+#{keyword}+'%'
+   </sql>
+   
+   <sql id="boardSearch">
+     <where>
+       <if test="keyword != null">
+         <if test="option == 'all'">
+          AND board_title LIKE '%'+#{keyword}+'%'
+          OR nickname   LIKE '%'+#{keyword}+'%'
+          OR board_cont     LIKE '%'+#{keyword}+'%'
+          OR book_title     LIKE '%'+#{keyword}+'%'
+          OR book_author    LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == 'titleAndCont'">
+          AND board_title LIKE '%'+#{keyword}+'%'
+          OR board_cont     LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == 'nickname'">
+          AND nickname LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == bookTitle">
+          AND book_title     LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == writer">
+          AND book_author    LIKE '%'+#{keyword}+'%'
+         </if>
+       </if>
+       <if test="writer != null">
+         AND nickname = #{writer}
+       </if>
+       <if test="like != null">
+         AND like_mem_num = #{like}
+       </if>
+     </where>
+   </sql>
+   
+  
+</mapper>

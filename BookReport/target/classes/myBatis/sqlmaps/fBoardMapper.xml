@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="FBoard">
+
+  <resultMap id="spBoardMap"
+      type="com.book.bboard.vo.BBoardVo">
+     <result property="board_num"         column="BOARD_NUM"        javaType="int" />
+     <result property="board_title"       column="BOARD_TITLE"      javaType="string" />
+     <result property="board_writer_num"  column="BOARD_WRITER_NUM" javaType="int" />
+     <result property="board_cont"        column="BOARD_CONT"   	javaType="string" />
+     <result property="regdate"           column="REGDATE"      	javaType="string" />
+     <result property="readcount"         column="READCOUNT"    	javaType="int" />
+     <result property="likecount"         column="LIKECOUNT"    	javaType="int" />
+     <result property="book_grade"        column="BOOK_GRADE"   	javaType="int" />
+     <result property="book_title"        column="BOOK_TITLE"   	javaType="string" />
+     <result property="book_author"       column="BOOK_AUTHOR" 	    javaType="string" />
+     <result property="publisher"         column="PUBLISHER"    	javaType="string" />
+     <result property="book_sort"         column="BOOK_SORT"    	javaType="string" />
+     <result property="book_image"         column="BOOK_IMAGE"  	javaType="string" />
+   </resultMap>
+   
+   <select id="boardList"
+   parameterType="hashmap"
+   resultType="com.book.fboard.vo.FBoardVo">
+     SELECT b.board_num, board_title, nickname board_writer, board_writer_num, readcount, (select count(*) from like_free where board_num = b.board_num) likecount, convert(CHAR(19), regdate, 20) regdate, board_image, (select count(*) from reply_free where reply_free.board_num=b.board_num) replycount
+     FROM free_board b JOIN member ON member.mem_num = b.board_writer_num
+     LEFT JOIN like_free l ON l.board_num = b.board_num
+     <include refid="boardSearch"></include>
+     ORDER BY ${sort}
+     <if test="check == 'true'">
+       desc
+     </if>
+     OFFSET (#{nowpage}-1)*#{dpp} ROWS
+     FETCH NEXT #{dpp} ROWS ONLY
+   </select>
+  
+   <select id="boardCount"
+   parameterType="hashmap"
+   resultType="int">
+     SELECT COUNT(*)
+     FROM free_board b JOIN member ON member.mem_num = b.board_writer_num
+     LEFT JOIN like_free l ON l.board_num = b.board_num
+     <include refid="boardSearch"></include>
+   </select>
+ 
+   <insert id="fBoardWrite"
+   parameterType = "hashmap">
+    INSERT INTO FREE_BOARD(BOARD_TITLE, BOARD_WRITER_NUM, BOARD_CONT, BOARD_IMAGE)
+    VALUES (#{title},#{mem_num},#{cont},#{board_image})
+   </insert>
+  
+   <select id="boardView"
+   statementType="CALLABLE"
+   parameterType="hashmap"
+   resultType="com.book.fboard.vo.FBoardVo"
+   >
+   { CALL FREE_BOARDVIEW(
+   #{board_num, mode=IN, jdbcType=INTEGER },
+   #{check, mode=IN, jdbcType=INTEGER }
+      )}
+   </select>
+  
+   <insert id="likeBoard"
+   statementType="CALLABLE"
+   parameterType="hashmap"
+   >
+    { CALL FREE_BOARDLIKE(
+   #{board_num, mode=IN, jdbcType=INTEGER },
+   #{mem_num, mode=IN, jdbcType=INTEGER },
+   #{cnt, mode=OUT, jdbcType=INTEGER } )} 
+   </insert>
+   
+   <select id="likeStatus"
+   parameterType="hashmap"
+   resultType="int">
+    SELECT count(*) FROM like_free
+    WHERE board_num = #{ board_num }
+    and like_mem_num = #{ mem_num }
+   </select>
+   
+  <update id="updateFBoard"
+   parameterType="hashmap">
+     UPDATE free_board
+     <set>
+        <if test="board_title!=null">
+           board_title = #{board_title}
+        </if>
+        <if test="board_image!=null">
+           board_image = #{board_image}
+        </if>
+           board_cont = #{cont}
+     </set>
+     WHERE board_num = #{board_num}
+   </update>
+   
+   
+   <delete id="deleteBoard"
+   parameterType="hashmap">
+    DELETE FROM free_board
+    WHERE board_num in 
+    <choose>
+      <when test="free_num_list!=null">
+      	<foreach collection="free_num_list" item="board_num" open="(" close=")" separator=",">
+	    	#{board_num}
+	    </foreach>
+      </when>
+      <otherwise>
+      	 (${board_num})
+      </otherwise>
+    </choose>
+    <if test="mem_lvl ==null">
+    	AND board_writer_num = #{ mem_num }
+    </if>
+   </delete>
+  
+   <delete id="likeCancel"
+   parameterType="hashmap">
+    DELETE FROM like_free
+    WHERE board_num in (${board_num})
+    and like_mem_num = #{ mem_num }
+   </delete>
+  
+   
+   <sql id="boardSearch">
+     <where>
+       <if test="keyword != null">
+         <if test="option == 'all'">
+          AND board_title LIKE '%'+#{keyword}+'%'
+          OR nickname   LIKE '%'+#{keyword}+'%'
+          OR board_cont     LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == 'titleAndCont'">
+          AND board_title LIKE '%'+#{keyword}+'%'
+          OR board_cont     LIKE '%'+#{keyword}+'%'
+         </if>
+         <if test="option == 'nickname'">
+          AND nickname LIKE '%'+#{keyword}+'%'
+         </if>
+       </if>
+       <if test="writer != null">
+         AND nickname = #{writer}
+       </if>
+       <if test="like != null">
+         AND like_mem_num = #{like}
+       </if>
+     </where>
+   </sql>
+   
+  
+</mapper>
