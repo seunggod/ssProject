@@ -1,0 +1,99 @@
+@import url(reset.css);
+@import url(ss_style.css);
+
+/* commmon */
+:root {
+    --primary_01: #71C1EE;
+    --primary_02: #378AD7;
+    --cancle: #EC4937;
+    --basic_03: #333;
+    --basic_05: #555;
+    --basic_07: #777;
+    --basic_09: #999;
+    --form: #D3D8DE;
+    --line: #F0F0F0;
+    --box_bg:#F5F6F7;
+    --basic_wh: #fff;
+    --basic_bl: #000;
+}
+/*.notosanskr * {*/
+/*    font-family: 'Noto Sans KR', sans-serif;*/
+/*}*/
+* {
+    font-family: 'S-CoreDream-3Light';
+}
+/*header*/
+header {
+    border-bottom: 1px solid var(--line);
+}
+header .search {
+    width: 40%;
+}
+.header_box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+.header_menu {
+    display: flex;
+}
+.header_menu li a {
+    padding: 0 15px;
+    position: relative;
+}
+.header_menu li:first-child a::after {
+    content: "";
+    top: 0px;
+    width: 1px;
+    height: 16px;
+    background-color: var(--basic_09);
+    position: absolute;
+    right: 0;
+}
+.nav-link:focus, .nav-link:hover {
+    color: var(--primary_02);
+    font-weight: bold;
+}
+.nav_bg {
+    background: url("../images/nav-bg.jpg") no-repeat;
+    background-position: center;
+    background-size: cover;
+    height: 300px;
+    width: 100%;
+}
+main {
+    display: flex;
+    justify-content: center;
+    padding: 100px 20px 200px;
+    height: 100%;
+    margin: 30px 0;
+}
+
+/*footer*/
+
+footer {
+    background-color: var(--box_bg);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+}
+.footer_box {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+footer ul li {
+    line-height: 1.2;
+}
+footer ul li:last-child {
+    padding-top: 10px;
+}
+footer .copyright {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.footer_text {
+    position: relative;
+    padding: 50px 0;
+}

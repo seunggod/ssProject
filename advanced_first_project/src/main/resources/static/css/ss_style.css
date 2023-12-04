@@ -1,0 +1,93 @@
+/* signIn */
+.me-6 {
+	margin-right: 3.5rem!important;
+}
+.pwd_find, .insert_user {
+	color:var(--basic_07);
+	text-decoration:none;
+}
+.w-35 {
+	width:35%;
+}
+/* signUp */
+.w-10 {
+	width:10%;
+}
+.terms_info{
+	margin-top:2%;
+	font-size:13px;
+	width:85%;
+	margin-left: 2.5rem!important;
+}
+.terms_font_size{
+	font-size:14px;
+}
+.term_contents{
+	color:var(--basic_09);
+}
+/* 프로필 관리 */
+.input_profile_image {
+	border-radius: 4em;
+	width: 15%;
+	height: 15%;
+}
+.input_profile_image:hover {
+	cursor: pointer;
+}
+.profile_image {
+	border-radius: 5em;
+	width: 83%;
+	height: 83%;
+}
+.left_profile_text {
+	font-size: 14px;
+}
+.sns_link {
+	height:1.5em!important;
+	width:2.75em!important;
+}
+.type_name {
+	width:20%;
+}
+.bedge_span{
+	right:41%!important;
+	top:87%!important;
+	padding:0.75rem!important;
+	background: url("../images/camera.png") no-repeat;
+	background-size: cover;
+	cursor: pointer;
+}
+/* 제작중인 요소의 색상 넣기에 사용 중*/
+.color_primary02 {
+	color: var(--primary_02);
+}
+.w-85{
+	width:85%;
+}
+.w-49{
+	width:49%;
+}
+.bg_primary01{
+	background-color: var(--primary_01);
+}
+.btn_cancel{
+	background-color: var(--line);
+}
+.btn_cancel:hover{
+	border-color: var(--form);
+	background-color: var(--form);
+	color:#000;
+}
+.w-60{
+	width:60%;
+}
+.w-81{
+	width:81%;
+}
+.coupon_box{
+	padding-bottom:6.25rem!important;
+}
+.coupon_btn_design{
+	border-bottom-style:5px solid blue;
+	border-bottom-color: var(--primary_02);
+}
